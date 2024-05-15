@@ -3,4 +3,5 @@
 
 ```bash
 pip install flask pandas
+FLASK_DEBUG=1 FLASK_RUN_PORT=8000 FLASK_APP=main.py flask run
 ```
