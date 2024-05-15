@@ -1,7 +1,6 @@
-# Dépôt du serveur Python qui lance OpenFisca pour la détection de l'éligibilité à la prime d'activité
+# Dépôt de l'équipe : détection de l'éligibilité à la prime d'activité
 
+- https://github.com/guillett/hackathon-dsn/tree/front
+- https://github.com/guillett/hackathon-dsn/tree/openfisca
+- https://github.com/mes-aides/simulateur/tree/hackathon-dsn
 
-```bash
-pip install flask pandas black openfisca-france-data openfisca-survey-manager adbc_driver_postgresql PyArrow
-FLASK_DEBUG=1 FLASK_RUN_PORT=8000 FLASK_APP=main.py flask run
-```
