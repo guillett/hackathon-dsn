@@ -158,7 +158,7 @@ def compute(siren, id):
 
 @application.route("/entreprise/cache/<id>/<id_assure>")
 def compute_assure(id, id_assure):
-    simul = pd.read_hdf(f"/media/veracrypt1/simulation_{id}.h5", data)
+    simul = pd.read_hdf(f"/media/veracrypt1/simulation_{id}.h5", "data")
     simul = simul.loc[simul.id_assure == id_assure]
     return simul.to_json()
 
