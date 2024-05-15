@@ -15,11 +15,9 @@ admissible_simulation_prefix = [
 
 tax_benefit_system = create_tbs()
 
-config_files_directory = os.path.join(
-    root_path, ".config", "openfisca-survey-manager"
-)
+config_files_directory = os.path.join(root_path, ".config", "openfisca-survey-manager")
 
-#config_files_directory = '/home/cgl/leximpact/hackathon_dsn/hackathon_dsn/.config/openfisca-survey-manager/'
+# config_files_directory = '/home/cgl/leximpact/hackathon_dsn/hackathon_dsn/.config/openfisca-survey-manager/'
 
 input_variables = [
     "idfam",
@@ -29,8 +27,9 @@ input_variables = [
     "quifoy",
     "quimen",
     "salaire_net",
-    "id_assure"
+    "id_assure",
 ]
+
 
 class DsnSurveyScenario(AbstractSurveyScenario):
     """Survey scenario spécialisé pour l'ERFS-FPR utilisée par Leximpact."""
@@ -51,13 +50,13 @@ class DsnSurveyScenario(AbstractSurveyScenario):
     def __init__(
         self,
         config_files_directory: str = config_files_directory,
-        annee_donnees = '2023-05',
-        period = '2023-05',
-        tax_benefit_systems = {"baseline" : tax_benefit_system},
+        annee_donnees="2023-05",
+        period="2023-05",
+        tax_benefit_systems={"baseline": tax_benefit_system},
         collection: str = "dsn",
         survey_name: str = None,
     ):
-        
+
         self.collection = collection
         self.annee_donnees = annee_donnees
         self.period = period

@@ -11,6 +11,7 @@ from openfisca_france_data.model.base import (
     Variable,
 )
 
+
 def create_tbs():
     class tbs_extension(reforms.Reform):
         def apply(self):
@@ -63,15 +64,7 @@ def create_tbs():
                 label = "Identifiant de l'assuré dans la DSN"
                 definition_period = ETERNITY
 
-            variables = [
-                idfam,
-                idfoy,
-                idmen,
-                quifam,
-                quifoy,
-                quimen,
-                id_assure
-            ]
+            variables = [idfam, idfoy, idmen, quifam, quifoy, quimen, id_assure]
 
             for variable in variables:
                 if variable == Variable:
@@ -81,8 +74,6 @@ def create_tbs():
                 except VariableNameConflictError:
                     self.update_variable(variable)
 
-    tax_benefits_system = tbs_extension(
-        openfisca_france_tax_benefit_system
-    )
+    tax_benefits_system = tbs_extension(openfisca_france_tax_benefit_system)
 
     return tax_benefits_system
