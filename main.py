@@ -147,13 +147,25 @@ def prepare_data(siren, id):
         )
 
 
+import cProfile
+import tempfile
+
 @application.route("/entreprise/<siren>/compute/<id>")
 def compute(siren, id):
+    profile = cProfile.Profile()
+    profile.enable()
+
     simulation = DsnSurveyScenario(collection="dsn", survey_name=f"dsn_{id}_2023-05")
     simul = simulation.simulations["baseline"].create_data_frame_by_entity(
         ["ppa", "id_assure"], period="2023-06", merge=True
     )
-    simul = simul.loc[simul.ppa > 0][["id_assure", "ppa"]]
+    tf = tempfile.NamedTemporaryFile(delete = False)
+    print("PROFILING RESULT http://127.0.0.1:8081/snakeviz/%s" % (tf.name))
+    profile.dump_stats(tf.name)
+    tf.close()
+
+    simul = simul[["id_assure", "ppa"]]
+    simul['id_run'] = id
     simul.to_hdf(f"//media/veracrypt3/files-openfisca/simulation_{id}.h5", key="data")
     return simul.to_json(orient="records")
 
@@ -164,4 +176,8 @@ def compute_assure(id, id_assure):
         f"//media/veracrypt3/files-openfisca/simulation_{id}.h5", "data"
     )
     simul = simul.loc[simul.id_assure == int(id_assure)]
-    return simul.to_json(orient="records")
+    simul['id_run'] = id
+    response = application.response_class(response=simul.to_json(orient="records"),
+                                  status=200,
+                                  mimetype='application/json')
+    return response
