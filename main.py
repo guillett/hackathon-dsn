@@ -11,7 +11,6 @@ import os
 from simulation.survey_scenario import DsnSurveyScenario
 
 application = Flask(__name__)
-data = pd.read_hdf("/media/veracrypt3/test")
 
 @application.route("/")
 def index():
@@ -25,16 +24,17 @@ def get_file_path(id):
 @application.route("/entreprise/<siren>/fetch")
 def fetch(siren):
     id = uuid.uuid4()
-    data[data.id_employeur == int(siren)].to_hdf(get_file_path(id), key="data")
+    prepare_data(siren, id)
+
     return jsonify({"siren": siren, "action": "fetch", "id": id})
 
-def prepare_data(id):
+def prepare_data(siren, id):
     # postgres://[user]:[pwd]@10.0.0.1:5432/dsn
     current_dir = os.getcwd()
     with open(f"{current_dir}/db", 'r') as o:
         constr = o.read()
     conn = dbapi.connect(constr)
-    data = pd.read_sql("""select ids.*,
+    data = pd.read_sql(f"""select ids.*,
 	    vers_mai.remuneration_nette_fiscale mai,
 	    vers_avril.remuneration_nette_fiscale avril,
 	    vers_mars.remuneration_nette_fiscale mars
@@ -50,7 +50,7 @@ def prepare_data(id):
         		inner join dadeh.ddadtemployeur_assure assoc on assoc.id_employeur = emp.id
         		inner join dadeh.ddadtassure assur on assoc.id_assure = assur.id
         --		where emp.en_code_apen = '7820Z'
-        	) assoc on assoc.id = vers.id_employeur_assure
+        	) assoc on assoc.id = vers.id_employeur_assure and assoc.id_employeur = {siren}
         group by id_assure
         ) ids
         left join (
@@ -82,7 +82,9 @@ def prepare_data(id):
     data['quifoy'] = data.idfoy * 0
     data['quimen'] = data.idmen * 0
 
-    config_files_directory = os.getcwd()
+    wd = os.getcwd()
+    config_files_directory = os.path.join(wd, ".config", "openfisca-survey-manager")
+
     collection = "dsn"
     survey_name = f"dsn_{id}_2023-05"
     for period in ["2023-05", "2023-04", "2023-03"]:
@@ -146,9 +148,17 @@ def compute(siren, id):
     #   },
     # ];
     # return jsonify([{"nom": "Doe", "prenom": "John", "id": "jd", "email": "j@d.oe", "ppa": 123}])
-    prepare_data(id)
     simulation = DsnSurveyScenario(collection="dsn", survey_name=f"dsn_{id}_2023-05")
-    simul = simulation.simulations['baseline'].create_data_frame_by_entity(['ppa'],period = '2023-06')['famille']
-    simul = simul.loc[simul.ppa > 0]
+    simul = simulation.simulations['baseline'].create_data_frame_by_entity(['ppa', 'id_assure'],period = '2023-06',merge = True)
+    simul = simul.loc[simul.ppa > 0][['id_assure','ppa']]
+    simul.to_hdf(f"/media/veracrypt1/simulation_{id}.h5", key = "data")
+    return simul.to_json()
+
+
+
+@application.route("/entreprise/cache/<id>/<id_assure>")
+def compute_assure(id, id_assure):
+    simul = pd.read_hdf(f"/media/veracrypt1/simulation_{id}.h5", data)
+    simul = simul.loc[simul.id_assure == id_assure]
     return simul.to_json()
 

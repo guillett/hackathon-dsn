@@ -19,7 +19,7 @@ config_files_directory = os.path.join(
     root_path, ".config", "openfisca-survey-manager"
 )
 
-config_files_directory = '/home/cgl/leximpact/hackathon_dsn/hackathon_dsn/.config/openfisca-survey-manager/'
+#config_files_directory = '/home/cgl/leximpact/hackathon_dsn/hackathon_dsn/.config/openfisca-survey-manager/'
 
 input_variables = [
     "idfam",
@@ -28,7 +28,8 @@ input_variables = [
     "quifam",
     "quifoy",
     "quimen",
-    "salaire_net"
+    "salaire_net",
+    "id_assure"
 ]
 
 class DsnSurveyScenario(AbstractSurveyScenario):

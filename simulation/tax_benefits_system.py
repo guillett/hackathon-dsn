@@ -56,6 +56,13 @@ def create_tbs():
                 label = "Identifiant foyer fiscal"
                 definition_period = ETERNITY
 
+            class id_assure(Variable):
+                is_period_size_independent = True
+                value_type = int
+                entity = Individu
+                label = "Identifiant de l'assuré dans la DSN"
+                definition_period = ETERNITY
+
             variables = [
                 idfam,
                 idfoy,
@@ -63,6 +70,7 @@ def create_tbs():
                 quifam,
                 quifoy,
                 quimen,
+                id_assure
             ]
 
             for variable in variables:
